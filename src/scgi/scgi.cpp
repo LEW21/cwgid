@@ -165,7 +165,8 @@ namespace SCGI
 				else if (name == "HTTPS")
 					spdy.scheme = "https";
 			}
-			else if (name == "REMOTE_ADDR")
+
+			if (name == "REMOTE_ADDR")
 				conn.remoteAddr = value;
 			else if (name == "REMOTE_PORT")
 				conn.remotePort = value;
