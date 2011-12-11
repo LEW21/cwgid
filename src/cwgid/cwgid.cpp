@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <stdexcept>
 #include <thread>
 #include <iostream>
@@ -7,9 +9,7 @@
 #include <sys/socket.h>
 #include <CWGI/cwgi.h>
 #include "../../include/CWGI/cwgid.h"
-
-#define CWGID_SOCKET_UNIX
-#define CWGID_SOCKET_IP
+#include <algorithm>
 
 #ifdef CWGID_SOCKET_UNIX
 #include <sys/un.h>
@@ -153,6 +153,14 @@ int newServer(const std::string& uri)
 	return serverSocket;
 }
 
+int safeAtoi(const char* string)
+{
+	if (!string)
+		return 0;
+
+	return atoi(string);
+}
+
 int main(int argc, char** argv)
 {
 	if (argc != 4)
@@ -177,33 +185,58 @@ int main(int argc, char** argv)
 
 	int server = newServer(uri);
 
-	for (;;)
+#ifndef CWGID_REF
+	int threadsNum = safeAtoi(getenv("CWGID_THREADS"));
+
+	if (!threadsNum)
+		threadsNum = std::max(uint(4), std::thread::hardware_concurrency());
+
+	std::thread* threads[threadsNum];
+
+	for (int i = 0; i < threadsNum; ++i)
 	{
-		int connection = ::accept(server, 0, 0);
-
-		if (connection < 0)
-			throw std::runtime_error("Can't accept.");
-
-		std::thread thread([=]()
+		threads[i] = new std::thread([=]()
 		{
-			try
+#endif
+			for (;;)
 			{
-				IStreamWrapper iw(connection);
-				OStreamWrapper ow(connection);
+				int connection = ::accept(server, 0, 0);
 
-				std::auto_ptr<CWGI::Request> request(protocol->newRequest(iw.stream));
-				std::auto_ptr<CWGI::Response> response(protocol->newResponse(ow.stream));
+				if (connection < 0)
+					throw std::runtime_error("Can't accept.");
 
-				(*app)(*request, *response);
+				std::function<void()> handler = [=]()
+				{
+					try
+					{
+						IStreamWrapper iw(connection);
+						OStreamWrapper ow(connection);
+
+						std::auto_ptr<CWGI::Request> request(protocol->newRequest(iw.stream));
+						std::auto_ptr<CWGI::Response> response(protocol->newResponse(ow.stream));
+
+						(*app)(*request, *response);
+					}
+					catch (std::exception& e)
+					{
+						std::cerr << e.what() << std::endl;
+					}
+
+					::shutdown(connection, SHUT_RDWR);
+					::close(connection);
+				};
+
+				#ifdef CWGID_REF
+					std::thread(handler).detach();
+				#else
+					handler();
+				#endif
 			}
-			catch (std::exception& e)
-			{
-				std::cerr << e.what() << std::endl;
-			}
-
-			::shutdown(connection, SHUT_RDWR);
- 			::close(connection);
+#ifndef CWGID_REF
 		});
-		thread.detach();
 	}
+
+	for (int i = 0; i < threadsNum; ++i)
+		threads[i]->join();
+#endif
 }

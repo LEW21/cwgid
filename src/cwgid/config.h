@@ -1,0 +1,3 @@
+#define CWGID_REF
+#define CWGID_SOCKET_UNIX
+#define CWGID_SOCKET_IP 
