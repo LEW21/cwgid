@@ -176,14 +176,14 @@ int main(int argc, char** argv)
 	Library appLib(appName);
 	CWGI::ApplicationFactory newApp = appLib.resolve<CWGI::ApplicationFactory>("CWGI_newApplication");
 
-	CWGI::Application* app = newApp();
-
 	Library protocolLib(protocolName);
 	CWGId::ProtocolFactory newProtocol = protocolLib.resolve<CWGId::ProtocolFactory>("CWGId_newProtocol");
 
 	CWGId::Protocol* protocol = newProtocol();
 
 	int server = newServer(uri);
+
+	CWGI::Application* app = newApp();
 
 #ifndef CWGID_REF
 	int threadsNum = safeAtoi(getenv("CWGID_THREADS"));
