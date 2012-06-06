@@ -12,6 +12,9 @@ CWGI:
 bin/cwgid: CWGI
 	cd src/cwgid && make
 
+bin/cwgid-launch: CWGI
+	cd src/cwgid-launch && make
+
 lib/scgi.so: CWGI
 	cd src/scgi && make
 
@@ -28,7 +31,7 @@ distclean: clean
 
 install: bin/cwgid lib/scgi.so
 	mkdir -p $(DESTDIR)/bin
-	cp bin/cwgid $(DESTDIR)/bin
+	cp bin/cwgid* $(DESTDIR)/bin
 	mkdir -p $(DESTDIR)/lib/cwgid
 	cp lib/*.so* $(DESTDIR)/lib/cwgid
 	mkdir -p $(DESTDIR)/include/CWGI
@@ -36,5 +39,5 @@ install: bin/cwgid lib/scgi.so
 
 uninstall:
 	rm $(DESTDIR)/include/CWGI/cwgid.h
-	rm $(DESTDIR)/bin/cwgid
+	rm $(DESTDIR)/bin/cwgid*
 	rm -R $(DESTDIR)/lib/cwgid

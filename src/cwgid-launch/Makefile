@@ -1,4 +1,4 @@
-TARGET = ../../bin/cwgid
+TARGET = ../../bin/cwgid-launch
 
 ####### Compiler, tools and options
 
@@ -10,25 +10,20 @@ LINK          = g++
 LFLAGS        = -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-O1
 STRIP         = strip
 
-ATL_INC       = -I../../ATL/include
-CWGI_INC      = -I../../CWGI/include
-CWGI_LIB      = -lCWGI -L../../CWGI/lib
-DL_INC        =
-DL_LIB        = -ldl
 SD_INC        =
 SD_LIB        = -lsystemd-daemon
 
-INCPATH = $(CWGI_INC) $(DL_INC) $(SD_INC)
+INCPATH = $(SD_INC)
 ####### Build rules
 
 all: $(TARGET)
 
-cwgid.o: cwgid.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cwgid.o cwgid.cpp
+launch.o: launch.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o launch.o launch.cpp
 
-$(TARGET): cwgid.o
+$(TARGET): launch.o
 	mkdir -p ../../bin
-	$(LINK) $(LFLAGS) -o $(TARGET) cwgid.o $(DL_LIB) $(SD_LIB) -pthread
+	$(LINK) $(LFLAGS) -o $(TARGET) launch.o $(SD_LIB) -pthread
 	$(STRIP) $(TARGET)
 
 clean:
