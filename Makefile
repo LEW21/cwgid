@@ -1,6 +1,6 @@
 DESTDIR = /usr/local
 
-all: bin/cwgid lib/scgi.so
+all: bin/cwgid lib/scgi.so lib/bhttp.so
 
 CWGI:
 	git clone git://github.com/LEW21/cwgi.git CWGI
@@ -12,6 +12,9 @@ bin/cwgid: CWGI
 lib/scgi.so: CWGI
 	cd src/scgi && make
 
+lib/bhttp.so: CWGI
+	cd src/bhttp && make
+
 clean:
 	-rm -f *~
 	-find . -name *~ -exec rm -f {} \;
@@ -22,7 +25,7 @@ distclean: clean
 	cd src && make distclean
 	rm -rf bin/ lib/
 
-install: bin/cwgid lib/scgi.so
+install: bin/cwgid lib/scgi.so lib/bhttp.so
 	mkdir -p $(DESTDIR)/bin
 	cp bin/cwgid* $(DESTDIR)/bin
 	mkdir -p $(DESTDIR)/lib/cwgid

@@ -1,4 +1,4 @@
-TARGET = ../../lib/scgi.so
+TARGET = ../../lib/bhttp.so
 
 ####### Compiler, tools and options
 
@@ -18,12 +18,12 @@ INCPATH = $(CWGI_INC)
 
 all: $(TARGET)
 
-scgi.o: scgi.cpp ../proto.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scgi.o scgi.cpp
+bhttp.o: bhttp.cpp ../proto.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bhttp.o bhttp.cpp
 
-$(TARGET): scgi.o
+$(TARGET): bhttp.o
 	mkdir -p ../../lib
-	$(LINK) $(LFLAGS) -o $(TARGET) scgi.o $(CWGI_LIB) -pthread
+	$(LINK) $(LFLAGS) -o $(TARGET) bhttp.o $(CWGI_LIB) -pthread
 	$(STRIP) $(TARGET)
 
 clean:

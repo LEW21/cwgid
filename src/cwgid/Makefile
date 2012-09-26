@@ -10,7 +10,6 @@ LINK          = g++
 LFLAGS        = -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-O1
 STRIP         = strip
 
-ATL_INC       = -I../../ATL/include
 CWGI_INC      = -I../../CWGI/include
 CWGI_LIB      = -lCWGI -L../../CWGI/lib
 DL_INC        =
