@@ -2,18 +2,12 @@ DESTDIR = /usr/local
 
 all: bin/cwgid lib/scgi.so
 
-ATL:
-	git clone git://gitorious.org/atl/atl.git ATL
-
 CWGI:
-	git clone git://gitorious.org/cwgi/cwgi.git CWGI
+	git clone git://github.com/LEW21/cwgi.git CWGI
 	cd CWGI && make
 
 bin/cwgid: CWGI
 	cd src/cwgid && make
-
-bin/cwgid-launch: CWGI
-	cd src/cwgid-launch && make
 
 lib/scgi.so: CWGI
 	cd src/scgi && make
@@ -21,7 +15,6 @@ lib/scgi.so: CWGI
 clean:
 	-rm -f *~
 	-find . -name *~ -exec rm -f {} \;
-	-rm -Rf ATL
 	-rm -Rf CWGI
 	cd src && make clean
 
